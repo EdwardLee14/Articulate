@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_URL = 'https://api.openai.com/v1';
 const AUTHORIZATION_HEADER = {
     headers: {
-        'Authorization': 'Bearer ${process.env.OPENAI_API_KEY}'
+        'Authorization': 'Bearer sk-proj-gHyUHzFHc7zCpzbKWyeZT3BlbkFJTYyPbjeUz1STlJoxLmcE'
     }
 };
 

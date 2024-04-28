@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
-import { StyleSheet, Image, TouchableOpacity, View, Button } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react'
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { Audio } from 'expo-av';
 import * as Speech from 'expo-speech';
 import ArtieMessage from '../components/ArtieMessage';
 import UserMessage from '../components/UserMessage';
 import RecordButton from '../components/RecordButton';
 import { transcribeAudio, sendMessageToOpenAI } from '../services/openAIServices';
+import ScoreButton from '../components/ScoreButton';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Chat() {
 
@@ -14,6 +16,13 @@ export default function Chat() {
     const [transcription, setTranscription] = React.useState([]);
     const [openAIResponse, setResponse] = React.useState([]);
     const [messages, setMessages] = useState([]);
+    const scrollViewRef = useRef();
+    const navigation = useNavigation();
+    const accuracy = 99;
+
+    useEffect(() => {
+        scrollViewRef.current.scrollToEnd({ animated: true });
+    }, [messages]);
 
     async function startRecording() {
         console.log("START");
@@ -51,13 +60,15 @@ export default function Chat() {
         await handleSend(transcription);
         console.log(transcription);
         console.log(messages);
+        console.log(audioURI);
     }
 
     const handleSend = async (transcriptedMessage) => {
         const newMessage = { role: 'user', content: transcriptedMessage };
         const responseContent = await sendMessageToOpenAI([...messages, newMessage]);
         const artieMessage = { role: 'assistant', content: responseContent };
-        setMessages(prevMessages => [...prevMessages, newMessage, artieMessage]);
+        const system = { role: 'system', content: 'You are a helpful assistant that guides the conversation forward in a friendly manner. You ask questions as necessary. You say everything in about 20 words or less. It is imperative that you keep it short and polite.' }
+        setMessages(prevMessages => [...prevMessages, newMessage, artieMessage, system]);
         setResponse(responseContent);
         console.log(responseContent);
         Speech.speak(responseContent);
@@ -103,21 +114,33 @@ export default function Chat() {
     // function clearRecordings() {
     //     setRecordings([])
     // }
-
+    // console.log(messages);
     return (
         <View style={styles.container}>
             {/* {getRecordingLines()} */}
             {/* <Button title={recordings.length > 0 ? '\n\n\nClear Recordings' : ''} onPress={clearRecordings} /> */}
-            {messages.map((message, index) => {
-                if (message.role === 'user') {
-                    return <UserMessage key={index} message={message.content} />;
-                } else if (message.role === 'assistant') {
-                    return <ArtieMessage key={index} message={message.content} />;
-                }
-            })}
+            {messages.length < 8 ? (
+                <RecordButton recording={recording} startRecording={startRecording} stopRecording={stopRecording} />
+            ) : (
+                <ScoreButton navigation={navigation} accuracy={accuracy} messages={messages}></ScoreButton>
+            )}
+            <ScrollView
+                ref={scrollViewRef}
+                style={styles.scrollView}
+                contentContainerStyle={{ paddingBottom: 150 }}
+                showsVerticalScrollIndicator={false}
+            >
+                {messages.map((message, index) => {
+                    if (message.role === 'user') {
+                        return <UserMessage key={index} message={message.content} />;
+                    } else if (message.role === 'assistant') {
+                        return <ArtieMessage key={index} message={message.content} />;
+                    }
+                })}
+            </ScrollView>
             {/* <UserMessage message={transcription}></UserMessage>
             <ArtieMessage message={openAIResponse}></ArtieMessage> */}
-            <RecordButton recording={recording} startRecording={startRecording} stopRecording={stopRecording}></RecordButton>
+
 
         </View>
     );
@@ -129,17 +152,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 22,
     },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginLeft: 10,
-        marginRight: 40
     },
-    fill: {
-        flex: 1,
-        margin: 15
+    scrollView: {
+        marginTop: 60,
+        marginBottom: 130,
     }
 });

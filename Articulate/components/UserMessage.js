@@ -13,19 +13,20 @@ const UserMessage = ({message}) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        justifyContent: 'flex-end',
         alignItems: 'center',
-        marginHorizontal: 30,
+        width: 280,
+        marginBottom: 10,
+        marginLeft: 44,
     },
     message: {
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: 21,
     },
     userImage: {
-        width: 24,
-        height: 24
+        marginLeft: 10,
+        width: 33,
+        height: 33,
     }
 });
 

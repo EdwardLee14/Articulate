@@ -17,16 +17,19 @@ const RecordButton = ({recording, startRecording, stopRecording}) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        zIndex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        bottom: 30,
+        position: 'absolute',
     },
     text: {
         fontSize: 20,
         fontWeight: 'bold',
     },
     buttonImage: {
-        width: 65,
-        height: 65
+        width: 70,
+        height: 70
     }
 });
 

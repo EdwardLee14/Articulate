@@ -12,19 +12,21 @@ const ArtieMessage = ({message}) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        marginHorizontal: 30,
+        width: 280,
+        marginBottom: 15,
+        marginRight: 64,
     },
     message: {
-        fontSize: 18,
+        fontSize: 21,
         fontWeight: 'bold',
     },
     artieImage: {
-        width: 35,
-        height: 35
+        width: 45,
+        height: 45,
+        marginLeft: 10,
     }
 });
 
